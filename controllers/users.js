@@ -18,6 +18,7 @@ var expressJwt = require("express-jwt");
 exports.getAllStudents = (req,res) => {
     userSchema.aggregate([
         { $match: { role : 0   } },
+        { $project : { role : 0 , salt : 0 , encry_password : 0 , createdAt : 0 ,updatedAt : 0 , __v : 0 , _id : 0   }  }
     ]).
         exec((err, students) => {
             res.json(students   )
