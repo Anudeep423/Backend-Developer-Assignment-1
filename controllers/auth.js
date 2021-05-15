@@ -9,7 +9,7 @@ exports.signup = (req, res) => {
           error : err
         });
       }
-      res.json({
+      res.status(200).json({
        user
       });
     });

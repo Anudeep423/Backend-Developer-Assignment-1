@@ -21,11 +21,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const swaggerDefinition = {
     openapi: '3.0.0',
-    info: {
-      title: 'Express API for JSONPlaceholder',
-      version: '1.0.0'
-     
-    },
+
     servers: [
       {
         url: 'http://localhost:8080',
