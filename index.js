@@ -1,23 +1,19 @@
 const express = require("express");
-
-const userRoutes = require("./views/users")
-
-const sessionRoutes = require("./views/session")
 const app = express();
-const cors = require("cors");
-const morgan = require("morgan");
-
-var jwt = require("jsonwebtoken");
-var expressJwt = require("express-jwt");
-
-const cookieParser = require("cookie-parser");
-
 const mongoose = require("mongoose");
-
+require("dotenv").config();
 const bodyParser = require("body-parser")
-
+const cookieParser = require("cookie-parser");
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+
+// Importing routes
+
+const userRoutes = require("./views/users")
+const sessionRoutes = require("./views/session")
+
+
+// Swagger definition
 
 const swaggerDefinition = {
     openapi: '3.0.0',
@@ -39,14 +35,15 @@ const swaggerDefinition = {
   const swaggerSpec = swaggerJSDoc(options);
 
 
-
-//   const specs = swaggerJsDoc(options);
-
-require("dotenv").config();
+// route to access Swagger 
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Creating a Port Number
+
 const port = 8080;
+
+// Middlewares
 
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -55,6 +52,7 @@ app.get("/", (req,res) => {
 return res.send("app working")
 }  )
 
+// Connecting to mongoDB
 
 mongoose
   .connect( process.env.DATABASE  , {
@@ -66,11 +64,15 @@ mongoose
     console.log("DB CONNECTED");
   }).catch(err => {console.log(err)} )
 
+// all routes  
+
 app.use("/api",userRoutes);
 app.use("/api",sessionRoutes)
-app.use(cors());
-app.use(express.json());
-app.use(morgan("dev"));
 
+
+
+
+
+// Starting server
 
 app.listen(port  , console.log(`port started running on ${port}`))

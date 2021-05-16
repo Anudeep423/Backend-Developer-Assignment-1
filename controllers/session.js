@@ -1,5 +1,7 @@
 const sessionSchema = require("../models/session")
-const userSchema = require("../models/users");
+
+
+//Middleware to get session details by passing session id so that lined up middleware can get it by req.session
 
 exports.getSessionById = (req, res, next, id) => {
   console.log('Called', id)
@@ -13,6 +15,8 @@ exports.getSessionById = (req, res, next, id) => {
     })
 }
 
+//Controller to display ression details passed by getSessionById middleware
+
 exports.getASession = (req, res) => {
 
   return res.json(req.session);
@@ -20,9 +24,14 @@ exports.getASession = (req, res) => {
 }
 
 
+//Controller to create a session 
+
+
 exports.createSession = (req, res) => {
 
   const session = new sessionSchema(req.body)
+    console.log("calleddd",req.body)
+  session.instructor = req.user.name;
 
   session.save((err, session) => {
     if (err) {
@@ -32,9 +41,10 @@ exports.createSession = (req, res) => {
     }
     return res.json(session);
   })
-
-
 }
+
+
+// Controller to get all the sessions created
 
 exports.getAllSessions = (req, res) => {
   sessionSchema.find()
@@ -45,6 +55,9 @@ exports.getAllSessions = (req, res) => {
       return res.json(sessions)
     })
 }
+
+
+//Controller for  updating session details 
 
 
 
@@ -65,9 +78,11 @@ exports.updateSessionDetails = (req, res) => {
   );
 };
 
+
+//Controller for deleting a session 
+
 exports.deleteSession = (req, res) => {
   const session = req.session;
-
   session.remove((err, session) => {
     if (err) {
       return res.status(400).json({
@@ -80,11 +95,13 @@ exports.deleteSession = (req, res) => {
   });
 }
 
+//Controller to get all the Student sessions in which he is registered in 
+
 
 exports.checkStudentSessions = (req, res) => {
 
   sessionSchema.aggregate([
-    { $match: { "studentsAttending": req.params.name } }
+    { $match: { "studentsAttending": req.user.name } }
   ]).exec((err, sessions) => {
     if (err || !sessions) {
       return res.json(err)
@@ -95,10 +112,12 @@ exports.checkStudentSessions = (req, res) => {
 
 }
 
-exports.getAllSessionsOfInstructor = async (req, res) => {
 
+//Controller to get all the sessions of a particular instructor *
+
+exports.getAllSessionsOfInstructor = async (req, res) => {
   await sessionSchema.aggregate([
-    { $match: { "instructor": req.params.name } }
+    { $match: { "instructor": req.user.name } }
   ]).exec((err, sessions) => {
     if (err) {
       return res.json(err)

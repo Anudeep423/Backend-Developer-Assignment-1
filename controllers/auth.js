@@ -1,6 +1,10 @@
 const userSchema = require("../models/users");
 var jwt = require("jsonwebtoken");
 
+//Signup controller 
+
+
+
 exports.signup = (req, res) => {
     const user = new userSchema(req.body);
     user.save((err, user) => {
@@ -14,6 +18,15 @@ exports.signup = (req, res) => {
       });
     });
   };
+
+
+
+
+
+
+//Signin controller 
+
+
 
   exports.signin = (req, res) => {
 
@@ -38,15 +51,21 @@ exports.signup = (req, res) => {
       res.cookie("token", token, { expire: new Date() + 9999 });
   
       //send response to front end
-      const { _id, name, email, role } = user;
-      return res.json({ token, user: { _id, name, email, role } });
+      const { _id, name, email, role , encry_password  } = user;
+      return res.json({ token, user: { _id, name, email, role , encry_password  } });
     });
   };
 
-exports.checkAccess = (req,res,next) => {
-    console.log("CALLED IN CHECK ACCESS")
-    console.log(req.user)
 
+
+
+
+ //Checking wheather the user is intructor or not *
+ 
+ 
+
+exports.checkAccess = (req,res,next) => {
+      console.log("Called")
     if(req.user.role === 1 ){
         next();
     }else{

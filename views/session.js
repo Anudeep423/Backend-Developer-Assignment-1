@@ -2,20 +2,62 @@ const express = require("express");
 
 const router = express.Router();
 
-const {createSession,getSessionById,updateSessionDetails,getAllSessions,deleteSession,getASession
-    ,getAllSessionsOfInstructor} = require("../controllers/session")
-
-const {getUserById} = require("../controllers/users")
+const {getUserById,getInstructorById} = require("../controllers/users")
 
 const {checkAccess} = require("../controllers/auth")
 
+const {createSession,getSessionById,updateSessionDetails,getAllSessions,
+    deleteSession,getASession,getAllSessionsOfInstructor} = require("../controllers/session")
+
+
+
+
 // middlewares
 
-router.param("userId" , getUserById  )
+router.param("instructorId" , getUserById  )
 
 router.param("sessionId" , getSessionById  )
 
-//route to create a session
+
+
+// all session routes 
+
+
+
+
+//protected route to create a session 
+
+router.post("/create/session/:instructorId" , checkAccess ,  createSession );
+
+//protected route to get all details of a session 
+
+router.get("/getasession/:instructorId/:sessionId",checkAccess, getASession);
+
+//protected route to update details of a session 
+
+router.put("/update/session/:instructorId/:sessionId" , checkAccess , updateSessionDetails);
+
+//protected route to get all sessions 
+
+router.get("/getallsessions/:instructorId" ,checkAccess, getAllSessions)
+
+//protected route to delete a session
+
+router.delete("/delete/session/:instructorId/:sessionId",checkAccess,deleteSession)
+
+//protected route to get all sessions of instructor
+
+router.get("/getallsessionsofinstructor/:instructorId", checkAccess ,getAllSessionsOfInstructor   )
+
+
+
+
+
+//Swagger to create a session
+
+
+
+
 
 /**
 *   @swagger
@@ -24,15 +66,11 @@ router.param("sessionId" , getSessionById  )
 *        CreateSession:
 *          type: object
 *          required:
-*            - instructor
 *            - topic
 *            - date
 *            - startTime
 *            - duration  
 *          properties:
-*            instructor:
-*              type: string
-*              description: Enter instructor name
 *            topic:
 *              type: string
 *              description: Enter topic to be discussed in the session.
@@ -49,7 +87,7 @@ router.param("sessionId" , getSessionById  )
 *              type: array
 *              description: Add all the student name to regsiter them for the session.
 *          example:
-*             instructor : Pramod
+
 *             topic : maths
 *             date  : 14/05/1999
 *             startTime : "6:30"
@@ -61,12 +99,12 @@ router.param("sessionId" , getSessionById  )
 
 /**
  * @swagger
- * /api/create/session/{userId}:
+ * /api/create/session/{instructorId}:
  *   post:
  *     summary: This is a procted router you can create a session only by passing instructor id.
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: instructorId
  *         required: true
  *         description: Enter Instructor ID
  *         schema:
@@ -77,34 +115,64 @@ router.param("sessionId" , getSessionById  )
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/CreateSession'
- *     responses:
- *        "200":
-*          description: Successfully created session.
-*          content:
-*             application/json:
-*              schema:
-*                 $ref: '#/components/schemas/CreateSession'
+  *     responses:
+ *       200:
+ *         description: Session created.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                     type: object
+ *                     properties:
+ *                       studentsAttending:
+ *                         type: array
+ *                         example: ["Bala,Rakesh"]
+ *                       _id:
+ *                         type: string
+ *                         example: 60a03d461f431c3ac4e8ad48
+ *                       topic:
+ *                         type: string
+ *                         example: maths
+ *                       date:
+ *                         type: string
+ *                         example: 14/05/1999
+ *                       startTime:
+ *                         type: string
+ *                         example: 6:30
+ *                       duration:
+ *                         type: string
+ *                         example: 1hr
+ *                       instructor:
+ *                         type: string
+ *                         example: Pramod
+ *                       __v:
+ *                         type: integer
+ *                         example: 0
 */    
 
-router.post("/create/session/:userId" , checkAccess ,  createSession );
 
 
-// route to get a session 
+
+//  Swagger to get details of a session 
+
+
 
 
 
 
 /**
  * @swagger
- * /api/getasession/{userId}/{sessionId}:
+ * /api/getasession/{instructorId}/{sessionId}:
  *   get:
  *     summary: This is a protected route where you can get details of a session it can only be  accesed by the instructor by providing his Id.
  *     description: Retrieve a single JSONPlaceholder user. Can be used to populate a user profile when prototyping or testing an API.
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: instructorId
  *         required: true
- *         description: Numeric userId of the user to retrieve.
+ *         description: Numeric instructorId of the user to retrieve.
  *         schema:
  *           type: string
  *       - in: path
@@ -113,9 +181,9 @@ router.post("/create/session/:userId" , checkAccess ,  createSession );
  *         description: Numeric sessionId .
  *         schema:
  *           type: string
- *     responses:
+  *     responses:
  *       200:
- *         description: A list of students.
+ *         description: Session Details.
  *         content:
  *           application/json:
  *             schema:
@@ -123,7 +191,31 @@ router.post("/create/session/:userId" , checkAccess ,  createSession );
  *               properties:
  *                 data:
  *                     type: object
- * 
+ *                     properties:
+ *                       studentsAttending:
+ *                         type: array
+ *                         example: ["Bala,Rakesh"]
+ *                       _id:
+ *                         type: string
+ *                         example: 60a03eb30c4e011510174d9d
+ *                       topic:
+ *                         type: string
+ *                         example: maths
+ *                       date:
+ *                         type: string
+ *                         example: 14/05/1999
+ *                       startTime:
+ *                         type: string
+ *                         example: 6:30
+ *                       duration:
+ *                         type: string
+ *                         example: 1hr
+ *                       instructor:
+ *                         type: string
+ *                         example: Pramod
+ *                       __v:
+ *                         type: integer
+ *                         example: 0
  */
 
 
@@ -133,16 +225,10 @@ router.post("/create/session/:userId" , checkAccess ,  createSession );
 
 
 
-router.get("/getasession/:userId/:sessionId",checkAccess, getASession);
+// Swagger to update a session
 
 
 
-
-
-
-
-
-// route to update a session
 
 /**
 *   @swagger
@@ -176,24 +262,18 @@ router.get("/getasession/:userId/:sessionId",checkAccess, getASession);
 *              type: array
 *              description: Add all the student name to regsiter them for the session.
 *          example:
-*             instructor : Pramod
-*             topic : maths
-*             date  : 14/05/1999
-*             startTime : "6:30"
-*             studentsAttending : ["Bala,Rakesh"]
-*             duration : 1Hr
 *               
 */
 
 
 /**
  * @swagger
- * /api/update/session/{userId}/{sessionId}:
+ * /api/update/session/{instructorId}/{sessionId}:
  *   put:
  *     summary: This is a procted router you can update a session only by passing instructor id.
  *     parameters:
  *       - in: path
- *         name: userId 
+ *         name: instructorId 
  *         required: true
  *         description: Enter Instructor ID
  *         schema:
@@ -210,42 +290,9 @@ router.get("/getasession/:userId/:sessionId",checkAccess, getASession);
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/UpdateSession'
- *     responses:
- *        "200":
-*          description: Successfully created session.
-*          content:
-*             application/json:
-*              schema:
-*                 $ref: '#/components/schemas/UpdateSession'
-*/    
-
-
-
-
-
-
-router.put("/update/session/:userId/:sessionId" , checkAccess , updateSessionDetails);
-
-// route to get all sessions
-
-
-
-/**
- * @swagger
- * /api/getallsessions/{userId}:
- *   get:
- *     summary: This is a protected route where you get details of all the sessions
- *     description: Retrieve a single JSONPlaceholder user. Can be used to populate a user profile when prototyping or testing an API.
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         description: Numeric userId of the user to retrieve.
- *         schema:
- *           type: string
   *     responses:
  *       200:
- *         description: A list of students.
+ *         description: Session updated.
  *         content:
  *           application/json:
  *             schema:
@@ -254,36 +301,93 @@ router.put("/update/session/:userId/:sessionId" , checkAccess , updateSessionDet
  *                 data:
  *                     type: object
  *                     properties:
- *                       role:
- *                         type: integer
- *                         description: user's role 1 if instructor and 0 if student.
- *                         example: 0
+ *                       studentsAttending:
+ *                         type: array
+ *                         example: ["Bala,Rakesh"]
  *                       _id:
  *                         type: string
- *                         description: Id generated by mongoDB.
- *                         example: 609ec4b3aa111c1d3c1a016b
- *                       name:
+ *                         example: 60a03eb30c4e011510174d9d
+ *                       topic:
  *                         type: string
- *                         description: user name.
- *                         example: bob
- *                       salt:
+ *                         example: maths
+ *                       date:
  *                         type: string
- *                         description: Secret for Security.
- *                         example: b73fd738-f22e-4d63-85f6-24259a56af76
- *                       encry_password:
+ *                         example: 14/05/1999
+ *                       startTime:
  *                         type: string
- *                         description: Encrypted password.
- *                         example: e0d40a51514e20a68f14c42b4620a480ae4b6bf760c2fc026fcbfddde104a9a4
- *                       email:
+ *                         example: 6:30
+ *                       duration:
  *                         type: string
- *                         description: The student's name.
- *                         example: rob@gmail.com
- *                       createdAt:
- *                         type: string                      
- *                         example: 2021-05-13T18:24:42.198Z
- *                       updatedAt:
- *                         type: string                      
- *                         example: 2021-05-14T16:22:21.198Z
+ *                         example: 1hr
+ *                       instructor:
+ *                         type: string
+ *                         example: Pramod
+ *                       __v:
+ *                         type: integer
+ *                         example: 0
+*/    
+
+
+
+
+
+
+
+
+//  Swagger to get all sessions
+
+
+
+
+
+/**
+ * @swagger
+ * /api/getallsessions/{instructorId}:
+ *   get:
+ *     summary: This is a protected route where you get details of all the sessions
+ *     description: Retrieve a single JSONPlaceholder user. Can be used to populate a user profile when prototyping or testing an API.
+ *     parameters:
+ *       - in: path
+ *         name: instructorId
+ *         required: true
+ *         description: Enter InstructorID
+ *         schema:
+ *           type: string
+  *     responses:
+ *       200:
+ *         description: A list of sessions of an instructor.
+ *         content:
+ *           application/json:
+  *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                     type: object
+ *                     properties:
+ *                       studentsAttending:
+ *                         type: array
+ *                         example: ["Bala,Rakesh"]
+ *                       _id:
+ *                         type: string
+ *                         example: 60a03eb30c4e011510174d9d
+ *                       topic:
+ *                         type: string
+ *                         example: maths
+ *                       date:
+ *                         type: string
+ *                         example: 14/05/1999
+ *                       startTime:
+ *                         type: string
+ *                         example: 6:30
+ *                       duration:
+ *                         type: string
+ *                         example: 1hr
+ *                       instructor:
+ *                         type: string
+ *                         example: Pramod
+ *                       __v:
+ *                         type: integer
+ *                         example: 0
  */
 
 
@@ -291,23 +395,25 @@ router.put("/update/session/:userId/:sessionId" , checkAccess , updateSessionDet
 
 
 
-router.get("/getallsessions/:userId",checkAccess,getAllSessions)
 
-// route to delete a session 
+
+//  Swagger to delete a session 
+
+
 
 
 
 /**
  * @swagger
- * /api/delete/session/{userId}/{sessionId}:
+ * /api/delete/session/{instructorId}/{sessionId}:
  *   delete:
  *     summary: This is a protected route where you can delete a session .
  *     description: Retrieve a single JSONPlaceholder user. Can be used to populate a user profile when prototyping or testing an API.
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: instructorId
  *         required: true
- *         description: Numeric userId of the user to retrieve.
+ *         description: Enter Instructor ID .
  *         schema:
  *           type: string
  *       - in: path
@@ -319,45 +425,78 @@ router.get("/getallsessions/:userId",checkAccess,getAllSessions)
  *     responses:
  *       200:
  *         description: Deletion Successfull.
+  *         content:
+ *           application/json:
+  *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ *                         example: Successfully deleted
 
  */
 
 
-router.delete("/delete/session/:userId/:sessionId",checkAccess,deleteSession)
 
 
-// router to get all sessions of an instructor by passing his id and name
+
+// Swagger to get all sessions of an instructor by passing his id and name
 
 
 /**
  * @swagger
- * /api/getallsessionsofinstructor/{userId}/{name}:
+ * /api/getallsessionsofinstructor/{instructorId}:
  *   get:
  *     summary: This is a protected route where you can all the sessions of an instructor .
  *     description: Retrieve a single JSONPlaceholder user. Can be used to populate a user profile when prototyping or testing an API.
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: instructorId
  *         required: true
- *         description: Numeric userId of the user to retrieve.
+ *         description: Numeric instructorId of the user to retrieve.
  *         schema:
  *           type: string
- *       - in: path
- *         name: name 
- *         required: true
- *         description: Enter name of Instructor
- *         schema:
- *           type: string
- *     responses:
+  *     responses:
  *       200:
- *         description: Deletion Successfull.
-
+ *         description: A list of sessions of an instructor.
+ *         content:
+ *           application/json:
+  *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                     type: object
+ *                     properties:
+ *                       studentsAttending:
+ *                         type: array
+ *                         example: ["Bala,Rakesh"]
+ *                       _id:
+ *                         type: string
+ *                         example: 60a03eb30c4e011510174d9d
+ *                       topic:
+ *                         type: string
+ *                         example: maths
+ *                       date:
+ *                         type: string
+ *                         example: 14/05/1999
+ *                       startTime:
+ *                         type: string
+ *                         example: 6:30
+ *                       duration:
+ *                         type: string
+ *                         example: 1hr
+ *                       instructor:
+ *                         type: string
+ *                         example: Pramod
+ *                       __v:
+ *                         type: integer
+ *                         example: 0
  */
 
 
-
-
-router.get("/getallsessionsofinstructor/:userId/:name", checkAccess ,getAllSessionsOfInstructor   )
 
 
 

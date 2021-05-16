@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const sessionSchema = new mongoose.Schema({
 
  instructor : {
-     type : String,
-     required : true
+     type : String
  },
 topic : {
     type : String, 
