@@ -101,7 +101,7 @@ router.get("/getallsessionsofinstructor/:instructorId", checkAccess ,getAllSessi
  * @swagger
  * /api/create/session/{instructorId}:
  *   post:
- *     summary: This is a procted router you can create a session only by passing instructor id.
+ *     summary: This is a procted router you can create a session only by passing instructor id , pass student name in studentsAttending array to make them register to the session.
  *     parameters:
  *       - in: path
  *         name: instructorId

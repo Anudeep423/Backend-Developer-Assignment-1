@@ -87,7 +87,7 @@ router.get("/checkStudentSessions/:userId" , checkStudentSessions );
  * @swagger
  * /api/signup:
  *   post:
- *     summary: Route for regisering a user.
+ *     summary: Route for regisering a user , passing role as 1 if you are an Instructor and 0 if you are a student.
  *     requestBody:
  *       required: true
  *       content:

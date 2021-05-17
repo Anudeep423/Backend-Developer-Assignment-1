@@ -46,7 +46,7 @@ const port = 8080;
 // Middlewares
 
 app.use(bodyParser.json())
-app.use(cookieParser())
+app.use(cookieParser()) 
 
 app.get("/", (req,res) => {
 return res.send("app working")
@@ -56,7 +56,7 @@ return res.send("app working")
 
 mongoose
   .connect( process.env.DATABASE  , {
-    useNewUrlParser: true,
+    useNewUrlParser: true, 
     useUnifiedTopology: true,
     useCreateIndex: true
   })
